@@ -47,16 +47,12 @@ public abstract class KEntity {
     }
 
     public JsonObject toJson() {
-        Map<String, Method> getters = getGetters();
-        Set<Entry<String, Method>> entrySet = getters.entrySet();
+        Map<String, Object> map = toMap();
+        Set<Entry<String, Object>> entrySet = map.entrySet();
 
         JsonObject obj = new JsonObject();
-        for (Entry<String, Method> entry : entrySet) {
-            try {
-                obj.add(entry.getKey(), javaToJsonJson(entry.getValue().invoke(this)));
-            } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-                throw new RuntimeException(e);
-            }
+        for (Entry<String, Object> entry : entrySet) {
+            obj.add(entry.getKey(), javaToJsonJson(entry.getValue()));
         }
 
         return obj;
@@ -106,6 +102,21 @@ public abstract class KEntity {
         return getters;
     }
 
+    public Map<String, Object> toMap() {
+        Map<String, Method> getters = getGetters();
+        Set<Entry<String, Method>> entrySet = getters.entrySet();
+
+        Map<String, Object> map = new HashMap<String, Object>();
+        for (Entry<String, Method> entry : entrySet) {
+            try {
+                map.put(entry.getKey(), entry.getValue().invoke(this));
+            } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return map;
+    }
+
     public void fromJson(JsonObject obj) {
         Set<Entry<String, JsonElement>> entrySet = obj.entrySet();
         Map<String, Method> setters = getSetters();
@@ -147,6 +158,7 @@ public abstract class KEntity {
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
     private Object jsonElementToJava(JsonElement elem, Class<?> type) {
+        if (elem == null || elem.isJsonNull()) return null;
         if (type.equals(Number.class)) {
             return elem.getAsNumber();
         } else if (type.equals(Long.class)) {

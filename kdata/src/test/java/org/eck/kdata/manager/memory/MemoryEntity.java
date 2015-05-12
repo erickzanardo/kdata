@@ -9,6 +9,8 @@ public class MemoryEntity extends KEntity {
     private Long id;
     @KField
     private String name;
+    @KField
+    private Integer age;
 
     public Long getId() {
         return id;
@@ -24,5 +26,13 @@ public class MemoryEntity extends KEntity {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public Integer getAge() {
+        return age;
+    }
+
+    public void setAge(Integer age) {
+        this.age = age;
     }
 }
