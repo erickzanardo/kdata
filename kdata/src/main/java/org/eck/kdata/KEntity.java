@@ -19,6 +19,33 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 
 public abstract class KEntity {
+
+    public String kind() {
+        return this.getClass().getSimpleName();
+    }
+
+    public void save() {
+        KDataManager.getStorager().save(this, getIdFieldName());
+    }
+
+    public void delete() {
+        KDataManager.getStorager().delete(this, getIdFieldName());
+    }
+
+    private String getIdFieldName() {
+        // TODO cache this
+        // TODO validate, must be long
+        Class<? extends KEntity> clazz = this.getClass();
+        Field[] fields = clazz.getDeclaredFields();
+
+        for (Field field : fields) {
+            if (field.isAnnotationPresent(KId.class)) {
+                return field.getName();
+            }
+        }
+        return null;
+    }
+
     public JsonObject toJson() {
         Map<String, Method> getters = getGetters();
         Set<Entry<String, Method>> entrySet = getters.entrySet();
