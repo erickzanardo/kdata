@@ -1,6 +1,5 @@
 package org.eck.kdata;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -10,19 +9,12 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import org.eck.kdata.annotations.KField;
-import org.eck.kdata.annotations.KId;
-
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 
 public abstract class KEntity {
-
-    public String kind() {
-        return this.getClass().getSimpleName();
-    }
 
     public void save() {
         KDataManager.getStorager().save(this, getIdFieldName());
@@ -33,17 +25,7 @@ public abstract class KEntity {
     }
 
     private String getIdFieldName() {
-        // TODO cache this
-        // TODO validate, must be long
-        Class<? extends KEntity> clazz = this.getClass();
-        Field[] fields = clazz.getDeclaredFields();
-
-        for (Field field : fields) {
-            if (field.isAnnotationPresent(KId.class)) {
-                return field.getName();
-            }
-        }
-        return null;
+        return KDataManager.getEntry(getClass()).getIdField();
     }
 
     public JsonObject toJson() {
@@ -77,33 +59,9 @@ public abstract class KEntity {
         return null;
     }
 
-    private Map<String, Method> getGetters() {
-        // TODO this can be cached
-        Map<String, Method> getters = new HashMap<String, Method>();
-        Class<? extends KEntity> clazz = this.getClass();
-        Field[] fields = clazz.getDeclaredFields();
-
-        for (Field field : fields) {
-            if (field.isAnnotationPresent(KId.class) || field.isAnnotationPresent(KField.class)) {
-                String name = field.getName();
-
-                StringBuilder getterName = new StringBuilder();
-                getterName.append("get").append(name.substring(0, 1).toUpperCase()).append(name.substring(1, name.length()));
-
-                try {
-                    Method getter = clazz.getMethod(getterName.toString());
-                    getters.put(name, getter);
-                } catch (NoSuchMethodException | SecurityException e) {
-                    throw new RuntimeException("We could not find a getter for the field: " + name, e);
-                }
-            }
-        }
-
-        return getters;
-    }
-
     public Map<String, Object> toMap() {
-        Map<String, Method> getters = getGetters();
+        KEntityEntry entityEntry = KDataManager.getEntry(this.getClass());
+        Map<String, Method> getters = entityEntry.getGetters();
         Set<Entry<String, Method>> entrySet = getters.entrySet();
 
         Map<String, Object> map = new HashMap<String, Object>();
@@ -118,8 +76,9 @@ public abstract class KEntity {
     }
 
     public void fromJson(JsonObject obj) {
+        KEntityEntry entityEntry = KDataManager.getEntry(this.getClass());
         Set<Entry<String, JsonElement>> entrySet = obj.entrySet();
-        Map<String, Method> setters = getSetters();
+        Map<String, Method> setters = entityEntry.getSetters();
         for (Entry<String, JsonElement> entry : entrySet) {
             Method setter = setters.get(entry.getKey());
             try {
@@ -129,31 +88,6 @@ public abstract class KEntity {
                 throw new RuntimeException(e);
             }
         }
-    }
-
-    private Map<String, Method> getSetters() {
-        // TODO this can be cached
-        Map<String, Method> setters = new HashMap<String, Method>();
-        Class<? extends KEntity> clazz = this.getClass();
-        Field[] fields = clazz.getDeclaredFields();
-
-        for (Field field : fields) {
-            if (field.isAnnotationPresent(KId.class) || field.isAnnotationPresent(KField.class)) {
-                String name = field.getName();
-
-                StringBuilder setterName = new StringBuilder();
-                setterName.append("set").append(name.substring(0, 1).toUpperCase()).append(name.substring(1, name.length()));
-
-                Method setter;
-                try {
-                    setter = clazz.getMethod(setterName.toString(), field.getType());
-                } catch (NoSuchMethodException | SecurityException e) {
-                    throw new RuntimeException("We could not find a setter for the field: " + name, e);
-                }
-                setters.put(name, setter);
-            }
-        }
-        return setters;
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })

@@ -9,8 +9,7 @@ public class KMemoryStorager extends KStorager {
 
     @Override
     public KEntity save(KEntity entity, String idField) {
-
-        String kind = entity.kind();
+        String kind = KDataManager.getEntry(entity.getClass()).getKind();
         if (KMemoryDB.db().get(kind) == null) {
             KMemoryDB.db().put(kind, new HashMap<Long, KEntity>());
         }
@@ -30,7 +29,7 @@ public class KMemoryStorager extends KStorager {
     @Override
     public void delete(KEntity entity, String idField) {
         if (entity != null) {
-            String kind = entity.kind();
+            String kind = KDataManager.getEntry(entity.getClass()).getKind();
             Map<Long, KEntity> kinds = KMemoryDB.db().get(kind);
             if (kinds != null) {
                 Long id = entity.toJson().get(idField).getAsLong();
