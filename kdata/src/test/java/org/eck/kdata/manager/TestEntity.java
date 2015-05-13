@@ -1,10 +1,10 @@
-package org.eck.kdata.manager.memory;
+package org.eck.kdata.manager;
 
 import org.eck.kdata.KEntity;
 import org.eck.kdata.annotations.KField;
 import org.eck.kdata.annotations.KId;
 
-public class MemoryEntity extends KEntity {
+public class TestEntity extends KEntity {
     @KId
     private Long id;
     @KField
