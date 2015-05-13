@@ -19,6 +19,11 @@ public class KMemoryStorager extends KStorager {
             KMemoryDB.db().get(kind).put(json.get(idField).getAsLong(), entity);
         } else {
             json.addProperty(idField, System.currentTimeMillis());
+            try {
+                Thread.sleep(5);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             entity.fromJson(json);
             KMemoryDB.db().get(kind).put(json.get(idField).getAsLong(), entity);
         }

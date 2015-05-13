@@ -1,5 +1,6 @@
 package org.eck.kdata.manager.memory;
 
+import java.util.Comparator;
 import java.util.List;
 
 import org.eck.kdata.KDataManager;
@@ -59,15 +60,32 @@ public class InMemoryTest {
         e.save();
 
         e = new MemoryEntity();
+        e.setName("Erick 2");
+        e.setAge(24);
+        e.save();
+
+        e = new MemoryEntity();
         e.setName("John");
         e.setAge(26);
         e.save();
 
         List<MemoryEntity> result = KDataManager.getFinder().find(MemoryEntity.class, new Filter("age", 24));
-        Assert.assertEquals(1, result.size());
+        result.sort(new Comparator<MemoryEntity>() {
+            @Override
+            public int compare(MemoryEntity o1, MemoryEntity o2) {
+                return o1.getName().compareTo(o2.getName());
+            }
+        });
+        Assert.assertEquals(2, result.size());
         e = result.get(0);
 
         Assert.assertEquals("Erick", e.getName());
         Assert.assertEquals(new Integer(24), e.getAge());
+
+        e = result.get(1);
+
+        Assert.assertEquals("Erick 2", e.getName());
+        Assert.assertEquals(new Integer(24), e.getAge());
+
     }
 }
