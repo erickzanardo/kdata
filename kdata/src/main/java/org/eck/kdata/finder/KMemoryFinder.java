@@ -23,7 +23,7 @@ public class KMemoryFinder extends KFinder {
         return null;
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
     public <T extends KEntity> List<T> find(Class<T> type, Filter... filters) {
         List<T> result = new ArrayList<T>();
@@ -38,8 +38,29 @@ public class KMemoryFinder extends KFinder {
                 Map<String, Object> map = thisE.toMap();
                 boolean match = true;
                 for (Filter filter : filters) {
-                    if (!map.get(filter.getField()).equals(filter.getValue())) {
-                        match = false;
+                    if (filter.getOperator().equals(Filter.O.EQ)) {
+                        if (!map.get(filter.getField()).equals(filter.getValue())) {
+                            match = false;
+                        }
+                    } else {
+                        Comparable c = ((Comparable) map.get(filter.getField()));
+                        if (filter.getOperator().equals(Filter.O.GT)) {
+                            if (c.compareTo(filter.getValue()) < 1) {
+                                match = false;
+                            }
+                        } else if (filter.getOperator().equals(Filter.O.GET)) {
+                            if (c.compareTo(filter.getValue()) < 0) {
+                                match = false;
+                            }
+                        } else if (filter.getOperator().equals(Filter.O.LT)) {
+                            if (c.compareTo(filter.getValue()) >= 0) {
+                                match = false;
+                            }
+                        } else if (filter.getOperator().equals(Filter.O.LET)) {
+                            if (c.compareTo(filter.getValue()) > 0) {
+                                match = false;
+                            }
+                        }
                     }
                 }
                 if (match) {

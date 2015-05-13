@@ -69,13 +69,14 @@ public class InMemoryTest {
         e.setAge(26);
         e.save();
 
+        e = new MemoryEntity();
+        e.setName("James");
+        e.setAge(27);
+        e.save();
+
+        // EQ
         List<MemoryEntity> result = KDataManager.getFinder().find(MemoryEntity.class, new Filter("age", 24));
-        result.sort(new Comparator<MemoryEntity>() {
-            @Override
-            public int compare(MemoryEntity o1, MemoryEntity o2) {
-                return o1.getName().compareTo(o2.getName());
-            }
-        });
+        sort(result);
         Assert.assertEquals(2, result.size());
         e = result.get(0);
 
@@ -87,5 +88,41 @@ public class InMemoryTest {
         Assert.assertEquals("Erick 2", e.getName());
         Assert.assertEquals(new Integer(24), e.getAge());
 
+        // GT
+        result = KDataManager.getFinder().find(MemoryEntity.class, new Filter("age", 24, Filter.O.GT));
+        sort(result);
+        Assert.assertEquals(2, result.size());
+
+        e = result.get(0);
+        Assert.assertEquals("James", e.getName());
+        Assert.assertEquals(new Integer(27), e.getAge());
+
+        e = result.get(1);
+        Assert.assertEquals("John", e.getName());
+        Assert.assertEquals(new Integer(26), e.getAge());
+
+        // GET
+        result = KDataManager.getFinder().find(MemoryEntity.class, new Filter("age", 24, Filter.O.GET));
+        sort(result);
+        Assert.assertEquals(4, result.size());
+
+        // LT
+        result = KDataManager.getFinder().find(MemoryEntity.class, new Filter("age", 27, Filter.O.LT));
+        sort(result);
+        Assert.assertEquals(3, result.size());
+
+        // LET
+        result = KDataManager.getFinder().find(MemoryEntity.class, new Filter("age", 27, Filter.O.LET));
+        sort(result);
+        Assert.assertEquals(4, result.size());
+    }
+
+    private void sort(List<MemoryEntity> result) {
+        result.sort(new Comparator<MemoryEntity>() {
+            @Override
+            public int compare(MemoryEntity o1, MemoryEntity o2) {
+                return o1.getName().compareTo(o2.getName());
+            }
+        });
     }
 }
