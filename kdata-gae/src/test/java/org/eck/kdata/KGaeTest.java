@@ -43,6 +43,7 @@ public class KGaeTest {
     public void testGet() {
         TestEntity e = new TestEntity();
         e.setName("Erick");
+        e.setAge(24);
         e.save();
 
         TestEntity result = KDataManager.getFinder().get(e.getId(), TestEntity.class);
