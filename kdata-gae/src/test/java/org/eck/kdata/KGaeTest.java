@@ -84,8 +84,13 @@ public class KGaeTest {
         e.setAge(27);
         e.save();
 
+        // Find all
+        List<TestEntity> result = KDataManager.getFinder().find(TestEntity.class);
+        sort(result);
+        Assert.assertEquals(4, result.size());
+
         // EQ
-        List<TestEntity> result = KDataManager.getFinder().find(TestEntity.class, new Filter("age", 24));
+        result = KDataManager.getFinder().find(TestEntity.class, new Filter("age", 24));
         sort(result);
         Assert.assertEquals(2, result.size());
         e = result.get(0);

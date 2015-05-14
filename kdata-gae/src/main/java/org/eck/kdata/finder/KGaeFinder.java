@@ -56,13 +56,13 @@ public class KGaeFinder extends KFinder {
             } else {
                 q.setFilter(gaeFilters.get(0));
             }
+        }
 
-            DatastoreService datastoreService = DatastoreServiceFactory.getDatastoreService();
-            PreparedQuery preparedQuery = datastoreService.prepare(q);
-            Iterable<Entity> asIterable = preparedQuery.asIterable();
-            for (Entity entity : asIterable) {
-                result.add(gaeEntityToKentity(type, entity));
-            }
+        DatastoreService datastoreService = DatastoreServiceFactory.getDatastoreService();
+        PreparedQuery preparedQuery = datastoreService.prepare(q);
+        Iterable<Entity> asIterable = preparedQuery.asIterable();
+        for (Entity entity : asIterable) {
+            result.add(gaeEntityToKentity(type, entity));
         }
 
         return result;
