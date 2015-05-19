@@ -2,7 +2,10 @@ package org.eck.kdata;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.eck.kdata.annotations.KField;
@@ -39,8 +42,16 @@ public class KDataManager {
             kEntityEntry = new KEntityEntry();
             kEntityEntry.setKind(type.getSimpleName());
 
+            List<Field> fields = new ArrayList<Field>();
+            fields.addAll(Arrays.asList(type.getDeclaredFields()));
+
+            Class superclass = type.getSuperclass();
+            while(!superclass.equals(KEntity.class) && !superclass.equals(Object.class)) {
+                fields.addAll(Arrays.asList(superclass.getDeclaredFields()));
+                superclass = superclass.getSuperclass();
+            }
+
             Map<String, Method> getters = new HashMap<String, Method>();
-            Field[] fields = type.getDeclaredFields();
 
             for (Field field : fields) {
                 if (field.isAnnotationPresent(KId.class) || field.isAnnotationPresent(KField.class)) {
@@ -59,7 +70,6 @@ public class KDataManager {
             }
 
             Map<String, Method> setters = new HashMap<String, Method>();
-            fields = type.getDeclaredFields();
 
             for (Field field : fields) {
                 if (field.isAnnotationPresent(KId.class) || field.isAnnotationPresent(KField.class)) {
