@@ -1,26 +1,34 @@
-package org.eck.kdata.manager.memory;
+package org.eck.kdata;
 
 import java.util.Comparator;
 import java.util.List;
 
-import org.eck.kdata.KDataManager;
-import org.eck.kdata.KMemoryDB;
-import org.eck.kdata.KMemoryStorager;
-import org.eck.kdata.entity.ChildEntity;
-import org.eck.kdata.entity.ParentEntity;
 import org.eck.kdata.finder.Filter;
-import org.eck.kdata.finder.KMemoryFinder;
+import org.eck.kdata.finder.KGaeFinder;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-public class InheritanceInMemoryTest {
+import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
+import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
+
+public class InheritanceGaeTest {
+    private final LocalServiceTestHelper helper = new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig());
+
     @Before
     public void setup() {
-        KMemoryDB.db().clear();
-        KDataManager.setFinder(new KMemoryFinder());
-        KDataManager.setStorager(new KMemoryStorager());
+        KDataManager.setFinder(new KGaeFinder());
+        KDataManager.setStorager(new KGaeStorager());
+
+        helper.setUp();
     }
+
+    @After
+    public void tearDown() {
+        helper.tearDown();
+    }
+
 
     @Test
     public void testInsert() {

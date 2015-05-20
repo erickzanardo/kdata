@@ -11,6 +11,7 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
 
 public class KGaeStorager extends KStorager {
+    public static final String _TYPE = "_TYPE";
 
     @Override
     public void delete(KEntity entity, String idField) {
@@ -51,6 +52,10 @@ public class KGaeStorager extends KStorager {
                     continue;
                 }
                 gaeEntity.setProperty(fieldEntry.getKey(), fieldEntry.getValue());
+            }
+
+            if (entry.isChild()) {
+                gaeEntity.setProperty(_TYPE, entity.getClass().getName());
             }
 
             datastoreService.put(gaeEntity);

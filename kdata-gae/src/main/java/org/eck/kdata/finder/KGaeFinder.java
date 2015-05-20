@@ -11,6 +11,7 @@ import org.eck.kdata.KDataKeyFactory;
 import org.eck.kdata.KDataManager;
 import org.eck.kdata.KEntity;
 import org.eck.kdata.KEntityEntry;
+import org.eck.kdata.KGaeStorager;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
@@ -82,7 +83,17 @@ public class KGaeFinder extends KFinder {
         }
     }
 
+    @SuppressWarnings("unchecked")
     private <T extends KEntity> T gaeEntityToKentity(Class<T> type, Entity entity) {
+        String _type = (String) entity.getProperty(KGaeStorager._TYPE);
+        if(_type != null) {
+            try {
+                type = (Class<T>) Class.forName(_type);
+            } catch (ClassNotFoundException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
         KEntityEntry entry = KDataManager.getEntry(type);
         String idField = entry.getIdField();
         Map<String, Method> setters = entry.getSetters();
