@@ -9,6 +9,7 @@ public class KEntityEntry {
     private String idField;
     private Map<String, Method> setters = new HashMap<String, Method>();
     private Map<String, Method> getters = new HashMap<String, Method>();
+    private boolean child;
 
     public String getKind() {
         return kind;
@@ -40,5 +41,13 @@ public class KEntityEntry {
 
     public void setGetters(Map<String, Method> getters) {
         this.getters = getters;
+    }
+
+    public boolean isChild() {
+        return child;
+    }
+
+    public void setChild(boolean child) {
+        this.child = child;
     }
 }

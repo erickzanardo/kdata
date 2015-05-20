@@ -37,8 +37,8 @@ public class KDataManager {
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public static KEntityEntry getEntry(Class type) {
         KEntityEntry kEntityEntry = entries.get(type);
-        
-        if(kEntityEntry == null) {
+
+        if (kEntityEntry == null) {
             kEntityEntry = new KEntityEntry();
             kEntityEntry.setKind(type.getSimpleName());
 
@@ -46,9 +46,18 @@ public class KDataManager {
             fields.addAll(Arrays.asList(type.getDeclaredFields()));
 
             Class superclass = type.getSuperclass();
-            while(!superclass.equals(KEntity.class) && !superclass.equals(Object.class)) {
+            Class lastSuperClass = superclass;
+            while (!superclass.equals(KEntity.class) && !superclass.equals(Object.class)) {
                 fields.addAll(Arrays.asList(superclass.getDeclaredFields()));
+                lastSuperClass = superclass;
                 superclass = superclass.getSuperclass();
+            }
+
+            if (lastSuperClass.equals(KEntity.class)) {
+                kEntityEntry.setKind(type.getSimpleName());
+            } else {
+                kEntityEntry.setKind(lastSuperClass.getSimpleName());
+                kEntityEntry.setChild(true);
             }
 
             Map<String, Method> getters = new HashMap<String, Method>();
@@ -73,7 +82,7 @@ public class KDataManager {
 
             for (Field field : fields) {
                 if (field.isAnnotationPresent(KId.class) || field.isAnnotationPresent(KField.class)) {
-                    if(field.isAnnotationPresent(KId.class)) {
+                    if (field.isAnnotationPresent(KId.class)) {
                         kEntityEntry.setIdField(field.getName());
                     }
                     String name = field.getName();
@@ -95,7 +104,7 @@ public class KDataManager {
 
             entries.put(type, kEntityEntry);
         }
-        
+
         return kEntityEntry;
     }
 }

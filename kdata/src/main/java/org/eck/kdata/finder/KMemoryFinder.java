@@ -38,12 +38,17 @@ public class KMemoryFinder extends KFinder {
                 Map<String, Object> map = thisE.toMap();
                 boolean match = true;
                 for (Filter filter : filters) {
+                    Object value = map.get(filter.getField());
+                    if(value == null) {
+                        match = false;
+                        continue;
+                    }
                     if (filter.getOperator().equals(Filter.O.EQ)) {
-                        if (!map.get(filter.getField()).equals(filter.getValue())) {
+                        if (!value.equals(filter.getValue())) {
                             match = false;
                         }
                     } else {
-                        Comparable c = ((Comparable) map.get(filter.getField()));
+                        Comparable c = ((Comparable) value);
                         if (filter.getOperator().equals(Filter.O.GT)) {
                             if (c.compareTo(filter.getValue()) < 1) {
                                 match = false;

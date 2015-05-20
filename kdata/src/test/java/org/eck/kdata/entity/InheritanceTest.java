@@ -36,7 +36,6 @@ public class InheritanceTest {
         Assert.assertEquals("ble", map.get("childField"));
 
         KEntityEntry entry = KDataManager.getEntry(ChildEntity.class);
-        Assert.assertEquals("ChildEntity", entry.getKind());
+        Assert.assertEquals("ParentEntity", entry.getKind());
     }
-
 }
