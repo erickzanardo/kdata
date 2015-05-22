@@ -38,6 +38,9 @@ public class SampleEntity extends KEntity {
     @KField
     private List<Double> doubleList;
 
+    @KField
+    private List<Byte> rawData;
+
     public Long getId() {
         return id;
     }
@@ -117,4 +120,13 @@ public class SampleEntity extends KEntity {
     public void setDoubleList(List<Double> doubleList) {
         this.doubleList = doubleList;
     }
+
+    public List<Byte> getRawData() {
+        return rawData;
+    }
+
+    public void setRawData(List<Byte> rawData) {
+        this.rawData = rawData;
+    }
+
 }

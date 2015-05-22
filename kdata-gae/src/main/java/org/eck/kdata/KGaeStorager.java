@@ -9,6 +9,7 @@ import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.Text;
 
 public class KGaeStorager extends KStorager {
     public static final String _TYPE = "_TYPE";
@@ -51,7 +52,14 @@ public class KGaeStorager extends KStorager {
                 if (fieldEntry.getKey().equals(idField)) {
                     continue;
                 }
-                gaeEntity.setProperty(fieldEntry.getKey(), fieldEntry.getValue());
+                Object value = fieldEntry.getValue();
+                if(value instanceof String) {
+                    String s = (String) value;
+                    if(s.length() > 1500) {
+                        value = new Text(s);
+                    }
+                }
+                gaeEntity.setProperty(fieldEntry.getKey(), value);
             }
 
             if (entry.isChild()) {

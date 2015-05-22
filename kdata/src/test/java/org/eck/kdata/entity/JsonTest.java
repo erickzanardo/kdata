@@ -46,6 +46,11 @@ public class JsonTest {
         doubleList.add(1.4);
         entity.setDoubleList(doubleList);
 
+        List<Byte> rawData = new ArrayList<Byte>();
+        rawData.add((byte) 0);
+        rawData.add((byte) 1);
+        entity.setRawData(rawData);
+
         JsonObject json = entity.toJson();
         Assert.assertEquals(1l, json.get("id").getAsLong());
         Assert.assertEquals("Erick", json.get("name").getAsString());
@@ -76,6 +81,11 @@ public class JsonTest {
         Assert.assertEquals(2, doubleListJson.size());
         Assert.assertEquals(1.3, doubleListJson.get(0).getAsJsonPrimitive().getAsDouble(), 0);
         Assert.assertEquals(1.4, doubleListJson.get(1).getAsJsonPrimitive().getAsDouble(), 0);
+
+        JsonArray rawDataJson = json.get("rawData").getAsJsonArray();
+        Assert.assertEquals(2, rawDataJson.size());
+        Assert.assertEquals(0, rawDataJson.get(0).getAsJsonPrimitive().getAsByte());
+        Assert.assertEquals(1, rawDataJson.get(1).getAsJsonPrimitive().getAsByte());
     }
 
     @Test
@@ -111,6 +121,11 @@ public class JsonTest {
         doubleListJson.add(new JsonPrimitive(1.4));
         obj.add("doubleList", doubleListJson);
 
+        JsonArray rawDataJson = new JsonArray();
+        rawDataJson.add(new JsonPrimitive(0));
+        rawDataJson.add(new JsonPrimitive(1));
+        obj.add("rawData", rawDataJson);
+
         SampleEntity se = new SampleEntity();
         se.fromJson(obj);
 
@@ -143,5 +158,10 @@ public class JsonTest {
         Assert.assertEquals(2, doubleList.size());
         Assert.assertEquals(1.3, doubleList.get(0), 0);
         Assert.assertEquals(1.4, doubleList.get(1), 0);
+
+        List<Byte> rawData = se.getRawData();
+        Assert.assertEquals(2, rawData.size());
+        Assert.assertEquals(new Integer(0), rawData.get(0));
+        Assert.assertEquals(new Integer(1), rawData.get(1));
     }
 }

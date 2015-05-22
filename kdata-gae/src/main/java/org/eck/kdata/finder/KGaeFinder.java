@@ -22,6 +22,7 @@ import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.CompositeFilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
+import com.google.appengine.api.datastore.Text;
 
 public class KGaeFinder extends KFinder {
 
@@ -86,7 +87,7 @@ public class KGaeFinder extends KFinder {
     @SuppressWarnings("unchecked")
     private <T extends KEntity> T gaeEntityToKentity(Class<T> type, Entity entity) {
         String _type = (String) entity.getProperty(KGaeStorager._TYPE);
-        if(_type != null) {
+        if (_type != null) {
             try {
                 type = (Class<T>) Class.forName(_type);
             } catch (ClassNotFoundException e) {
@@ -116,15 +117,19 @@ public class KGaeFinder extends KFinder {
                     continue;
 
                 Method setter = setterEntry.getValue();
-                
+
                 // Gae treats ever number as long,
                 // so we need to check that our setter is an Integer
                 Class<?> paramType = setter.getParameterTypes()[0];
                 Object val = entity.getProperty(setterEntry.getKey());
-                if(paramType.equals(Integer.class)) {
-                    val = ((Long) val).intValue();
+                if (paramType.equals(Integer.class)) {
+                    Long long1 = (Long) val;
+                    if(long1 != null)
+                        val = long1.intValue();
+                } else if (val instanceof Text) {
+                    val = ((Text) val).getValue();
                 }
-                
+
                 setter.invoke(kEntity, val);
             }
             return kEntity;
