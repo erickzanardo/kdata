@@ -81,6 +81,7 @@ public abstract class KEntity {
         Map<String, Method> setters = entityEntry.getSetters();
         for (Entry<String, JsonElement> entry : entrySet) {
             Method setter = setters.get(entry.getKey());
+            if(setter == null) continue;
             try {
                 Class<?> type = setter.getParameterTypes()[0];
                 setter.invoke(this, jsonElementToJava(entry.getValue(), type));

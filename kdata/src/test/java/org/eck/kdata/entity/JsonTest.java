@@ -164,4 +164,21 @@ public class JsonTest {
         Assert.assertEquals(new Integer(0), rawData.get(0));
         Assert.assertEquals(new Integer(1), rawData.get(1));
     }
+
+    @Test
+    public void fromEmptyJsonTest() {
+        JsonObject obj = new JsonObject();
+        SampleEntity e = new SampleEntity();
+        e.fromJson(obj);
+        Assert.assertNull(e.getName());
+    }
+
+    @Test
+    public void ignoreUnkknowAttributesTest() {
+        JsonObject obj = new JsonObject();
+        obj.addProperty("asdasd", 1);
+        SampleEntity e = new SampleEntity();
+        e.fromJson(obj);
+        Assert.assertNull(e.getName());
+    }
 }
